@@ -84,39 +84,21 @@ View live rankings on the [RoboDojo Leaderboard](https://robodojo-benchmark.com/
 
 ## 📝 Citation
 
-**RoboDojo**
-
 ```bibtex
+% RoboDojo
 @article{chen2026robodojo,
   title={{RoboDojo}: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies},
   author={Chen, Tianxing and Chen, Yue and Li, Zixuan and Tang, Junyuan and Su, Kailun and Wan, Weijie and Chen, Baijun and Lu, Haoran and Yan, Haowen and Su, Honghao and others},
   journal={arXiv preprint arXiv:2607.04434},
   year={2026}
 }
-```
 
-**RoboTwin 2.0**
-
-```bibtex
-@article{chen2025robotwin,
-  title={Robotwin 2.0: A scalable data generator and benchmark with strong domain randomization for robust bimanual robotic manipulation},
-  author={Chen, Tianxing and Chen, Zanxin and Chen, Baijun and Cai, Zijian and Liu, Yibin and Li, Zixuan and Liang, Qiwei and Lin, Xianliang and Ge, Yiheng and Gu, Zhenyu and others},
-  journal={arXiv preprint arXiv:2506.18088},
-  year={2025}
-}
-```
-
-**MagicSim**
-
-```bibtex
-@misc{lu2026magicsimunifiedinfrastructureexecutable,
-      title={MagicSim: A Unified Infrastructure for Executable Embodied Interaction}, 
-      author={Haoran Lu and Songling Liu and Yue Chen and Guo Ye and Mutian Shen and Shuyang Yu and Yu Xiao and Jihai Zhao and Shang Wu and Jianshu Zhang and Xiangtian Gui and Chuye Hong and Yuran Wang and Maojiang Su and Jiayi Wang and Ruihai Wu and Zhaoran Wang and Han Liu},
-      year={2026},
-      eprint={2606.17511},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2606.17511}, 
+% XPolicyLab
+@article{community2026xpolicylab,
+  title={{XPolicyLab}: A Unified Standard and Open Ecosystem for Robot Policy Evaluation and Deployment},
+  author={Community, XPolicyLab and Chen, Tianxing and Chen, Yue and Nian, Tian and Cai, Zijian and Chen, Guangyu and Lin, Wenwei and Liang, Qiwei and Xiang, Peicheng and Su, Kailun and others},
+  journal={arXiv preprint arXiv:2608.09892},
+  year={2026}
 }
 ```
 
@@ -134,12 +116,12 @@ RoboDojo is operated by **AI MMLab Club**, a non-profit, vendor-neutral organiza
 
 ## ⚖️ License
 
-Released under the [RoboDojo Non-Commercial Research License](LICENSE). RoboDojo is available for non-commercial research, education, and evaluation only. Commercial use requires prior written permission from the maintainers.
+Released under the [MIT License](LICENSE).
 
 
 <p align="center">
   <img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-475569?style=flat-square&logo=python&logoColor=white&labelColor=64748b" height="22"/>&nbsp;
   <img alt="Isaac Sim 5.1" src="https://img.shields.io/badge/Isaac_Sim-5.1-475569?style=flat-square&logo=nvidia&logoColor=76B900&labelColor=64748b" height="22"/>&nbsp;
   <img alt="Isaac Lab 2.3" src="https://img.shields.io/badge/Isaac_Lab-2.3-475569?style=flat-square&logo=nvidia&logoColor=76B900&labelColor=64748b" height="22"/>&nbsp;
-  <img alt="License Non-Commercial" src="https://img.shields.io/badge/License-Non--Commercial-475569?style=flat-square&labelColor=64748b" height="22"/>
+  <img alt="License MIT" src="https://img.shields.io/badge/License-MIT-475569?style=flat-square&labelColor=64748b" height="22"/>
 </p>

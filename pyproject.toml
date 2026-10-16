@@ -5,7 +5,7 @@ description = "RoboDojo robot simulation benchmark (eval-only release)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-authors = [{ name = "Yue Chen", email = "yuechen020614@gmail.com" }]
+authors = [{ name = "RoboDojo Contributors" }]
 
 [tool.ruff]
 line-length = 120
