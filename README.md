@@ -85,6 +85,7 @@ bash scripts/robodojo.sh bundle run INSTALLED --python ISAAC_PYTHON --policy-con
 `ARISE_CLI` selects the installed `arise` executable; `ARISE_WORKBENCH` selects its run ledger.
 For checkpoint-free integration, replace `--policy-config POLICY.yaml` with
 `--diagnostic-hold --fixture-mode hold --fixture-chunk 8`. Recording is enabled by default.
+Pass its resolved `--tools TOOLS.yaml` profile for this local fixture outside the ARISE checkout.
 The bundle freezes layout, assets, cameras and physics; its report separates execution
 acceptance from task success. Nonintegral policy/physics ratios require explicit
 `observation.quantized_control: true`: cumulative deadlines round up to physical ticks,
