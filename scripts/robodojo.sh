@@ -13,6 +13,7 @@ Commands:
   eval        Run one RoboDojo task through an XPolicyLab policy eval.sh (server + client on localhost)
   server      Start only the policy server (for split / multi-machine eval)
   client      Run only the sim client against an already-running policy server
+  bundle      Install or run an ARISE scene bundle through the native Dojo evaluator
   smoke       Run selected/all tasks; default sequential, or balanced multi-GPU with --gpu-ids
   benchmark   Run selected/all tasks; default sequential, or balanced multi-GPU with --gpu-ids
   dimensions  List capability dimensions and their runnable tasks
@@ -592,6 +593,17 @@ case "${command}" in
   eval) run_eval "$@" ;;
   server) run_server "$@" ;;
   client) run_client "$@" ;;
+  bundle)
+    arise_cli="${ARISE_CLI:-arise}"
+    if ! command -v "${arise_cli}" >/dev/null 2>&1; then
+      echo "[robodojo bundle] Install the bundle's ARISE wheel or set ARISE_CLI." >&2
+      exit 127
+    fi
+    if [[ -n "${ARISE_WORKBENCH:-}" ]]; then
+      exec "${arise_cli}" --workbench "${ARISE_WORKBENCH}" bundle "$@"
+    fi
+    exec "${arise_cli}" bundle "$@"
+    ;;
   smoke) run_sweep smoke "$@" ;;
   benchmark) run_sweep benchmark "$@" ;;
   summarize) run_summarize "$@" ;;

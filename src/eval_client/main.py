@@ -336,7 +336,8 @@ def main():
     OmegaConf.update(
         env_cfg,
         "camera.default_frequency",
-        eval_cfg["observation"].get("collect_freq", 0),
+        None if eval_cfg["observation"].get("quantized_control", False)
+        else eval_cfg["observation"].get("collect_freq", 0),
         force_add=True,
     )
 

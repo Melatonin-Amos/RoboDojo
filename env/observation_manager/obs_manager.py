@@ -1,9 +1,32 @@
 from copy import deepcopy
+from fractions import Fraction
+import math
 from typing import List
 
 import numpy as np
 
 from env.description_manager.desc_manager import DescManager
+
+
+def collect_steps(dt: float, frequency: float) -> int:
+    """Resolve a control period to integral physics steps without float truncation."""
+    if not math.isfinite(dt) or dt <= 0 or not math.isfinite(frequency) or frequency < 0:
+        raise ValueError("dt must be positive and observation frequency nonnegative and finite")
+    if frequency == 0:
+        return 0
+    ratio = 1.0 / (dt * frequency)
+    steps = round(ratio)
+    if steps < 1 or not math.isclose(ratio, steps, rel_tol=0, abs_tol=1e-9):
+        raise ValueError(f"observation frequency {frequency:g} Hz does not divide physics dt={dt:g}")
+    return steps
+
+
+def control_boundary(dt: float, frequency: float, action_number: int) -> int:
+    """First physics tick at/after an ideal policy deadline; no accumulated drift."""
+    if dt <= 0 or frequency <= 0 or action_number < 0:
+        raise ValueError("positive timing and nonnegative action number required")
+    period = 1 / (Fraction(str(dt)) * Fraction(str(frequency)))
+    return (action_number * period.numerator + period.denominator - 1) // period.denominator
 
 
 class ObsManager:
@@ -40,12 +63,17 @@ class ObsManager:
         # the entrypoints enable; render_sync adds one more if they are absent.
         self.capture_render_passes = int(self.obs_config.get("capture_render_passes", 1))
         self.capture_render_max_passes = int(self.obs_config.get("capture_render_max_passes", 16))
-        if self.collect_freq > 0:
-            self.collect_interval = 1.0 / (self.dt * self.collect_freq)
-        else:
-            self.collect_interval = 0.0
-        if not self.collect_interval.is_integer():
-            raise ValueError("Collect Interval must be integer!")
+        self.quantized_control = bool(obs_config.get("quantized_control", False))
+        if self.quantized_control and (
+            not math.isfinite(self.collect_freq) or self.collect_freq <= 0
+            or not math.isfinite(self.dt) or self.dt <= 0
+            or self.dt * self.collect_freq > 1
+        ):
+            raise ValueError("quantized policy clock requires positive rates below physics rate")
+        self.collect_interval = (
+            1 / (self.dt * self.collect_freq) if self.quantized_control
+            else collect_steps(self.dt, self.collect_freq)
+        )
         vision_cfg = self.obs_config.get("vision", {})
         self.collect_approximate_depth = vision_cfg.get("approximate_depth", True)
         self.collect_depth = vision_cfg.get("depth", False)
@@ -69,6 +97,13 @@ class ObsManager:
             self.camera_manager = None
 
         self.initialize_instruction()
+
+    def control_steps(self, action_number: int) -> int:
+        if not self.quantized_control:
+            return int(self.collect_interval)
+        return control_boundary(self.dt, self.collect_freq, action_number) - control_boundary(
+            self.dt, self.collect_freq, action_number - 1
+        )
 
     def initialize_instruction(self):
         self.desc_manager.initialize(self.env)

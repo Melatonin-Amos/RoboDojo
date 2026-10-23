@@ -497,7 +497,7 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
             Returns:
                     List[dict]: A control sequence of length `interpolation_nums`.
             """
-            interpolation_nums = int(self.obs_manager.collect_interval)
+            interpolation_nums = self.obs_manager.control_steps(self.take_action_cnt[env_idx])
             if interpolation_nums <= 0:
                 return [deepcopy(control_info)]
 
@@ -876,6 +876,8 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
             lazily on the first frame (when the resolution is known) and write
             to temporary files until the episode outcome decides the name.
             """
+            if not self.eval_cfg.get("record_video", True):
+                return
             vision = frame.get("vision") if isinstance(frame, dict) else None
             if not vision:
                 return

@@ -74,6 +74,23 @@ XPolicyLab/policy/<POLICY_NAME>/deploy.yml
 
 `eval.sh` starts the policy server and calls back into RoboDojo through `scripts/eval_policy.sh`; `deploy.yml` declares the server host, port, action mode, and policy-specific runtime settings.
 
+Imported ARISE scene bundles use the same native evaluation environment through a thin
+`bundle` entry. Install the matching ARISE wheel, then use:
+
+```bash
+bash scripts/robodojo.sh bundle install BUNDLE --case coin --output INSTALLED --render-runtime RENDER.yaml
+bash scripts/robodojo.sh bundle run INSTALLED --python ISAAC_PYTHON --policy-config POLICY.yaml --output RESULTS/evaluation.yaml
+```
+
+`ARISE_CLI` selects the installed `arise` executable; `ARISE_WORKBENCH` selects its run ledger.
+For checkpoint-free integration, replace `--policy-config POLICY.yaml` with
+`--diagnostic-hold --fixture-mode hold --fixture-chunk 8`. Recording is enabled by default.
+The bundle freezes layout, assets, cameras and physics; its report separates execution
+acceptance from task success. Nonintegral policy/physics ratios require explicit
+`observation.quantized_control: true`: cumulative deadlines round up to physical ticks,
+with no accumulated drift. This is nominal-rate, quantized simulation-time evaluation;
+it does not imply evenly spaced samples or real-time inference.
+
 ## 🏆 Leaderboard
 
 View live rankings on the [RoboDojo Leaderboard](https://robodojo-benchmark.com/leaderboard).
