@@ -194,7 +194,7 @@ class BaseEnv(gym.Env):
         """
         # enable cpu garment and deformable
         self.physics_interface = acquire_physx_interface()
-        self.physics_interface.overwrite_gpu_setting(1)
+        self.physics_interface.overwrite_gpu_setting(self.config.get("gpu_override", 1))
 
         # expose physics context
         self.physics_context = sim.sim.get_physics_context()

@@ -127,7 +127,7 @@ class ObsManager:
             max_passes=self.capture_render_max_passes,
         )
 
-    def get_obs(self, env_idx_list=None):  # batch
+    def get_obs(self, env_idx_list=None, *, include_vision=True):  # batch
         if env_idx_list is None:
             env_idx_list = range(self.num_envs)
         obs = dict()
@@ -141,7 +141,7 @@ class ObsManager:
                 "frequency": self.collect_freq,
             }
             obs[env_idx]["instruction"] = self.instruction[env_idx]
-        if self.camera_manager is not None and self.capture_manager is not None:
+        if include_vision and self.camera_manager is not None and self.capture_manager is not None:
             try:
                 data = self.capture_manager.step(env_ids=env_idx_list)
                 for ith in range(self.camera_manager.num_cams):
