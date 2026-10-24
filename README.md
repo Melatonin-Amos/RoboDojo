@@ -92,6 +92,13 @@ acceptance from task success. Nonintegral policy/physics ratios require explicit
 with no accumulated drift. This is nominal-rate, quantized simulation-time evaluation;
 it does not imply evenly spaced samples or real-time inference.
 
+`eval_cfg.target_interpolation` defaults to `dojo_ramp` (the existing 80%-interval ramp).
+Explicit `direct` mode holds the policy target over the interval while retaining native
+gripper mapping and limits. This is a different execution condition and is reported as such.
+An imported task can declare `reset_prepares_layout = True` when its reset already restores
+and settles its saved layout; the evaluator then avoids doing that work a second time.
+The existing initial-stability check still applies.
+
 ## 🏆 Leaderboard
 
 View live rankings on the [RoboDojo Leaderboard](https://robodojo-benchmark.com/leaderboard).

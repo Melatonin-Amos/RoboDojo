@@ -18,6 +18,8 @@ from utils.cluttered_generator import UnStableError
 from utils.pipeline_utils import get_robot_action_dim_info
 from utils.save_file import VideoStreamWriter, format_video_saved_message, save_json
 
+TARGET_INTERPOLATION_MODES = ("dojo_ramp", "direct")
+
 
 def _patch_websockets_proxy_compat():
     # Isaac Sim may load an older bundled websockets package that does not
@@ -245,14 +247,17 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
             self.model_client.call(func_name="reset")
 
         def setup_scene(self):
-            self.scene_manager.apply_saved_poses(env_idx_list=list(range(self.num_envs)))
+            if not getattr(self, "reset_prepares_layout", False):
+                self.scene_manager.apply_saved_poses(env_idx_list=list(range(self.num_envs)))
             self._align_layout_success()
             success, unstable_envs = self.scene_manager.layout_manager.check_layout_stability(self)
             unstable_envs = [idx for idx in set(unstable_envs) if idx < self.num_envs]
             self.unstable_nums += len(unstable_envs)
             self.episode_nums -= len(unstable_envs)
             if not success or self.episode_nums <= 0:
-                raise UnStableError("All scene Unstable Error!")
+                raise UnStableError(
+                    f"All scene Unstable Error! {getattr(self, 'initial_stability_diagnostics', {})}"
+                )
             for _ in range(10):
                 self.render()
             for idx in range(200):
@@ -502,6 +507,12 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
                 return [deepcopy(control_info)]
 
             control_info_list = [deepcopy(control_info) for _ in range(interpolation_nums)]
+            interpolation = self.eval_cfg.get("target_interpolation", "dojo_ramp")
+            if interpolation not in TARGET_INTERPOLATION_MODES:
+                raise ValueError("target_interpolation must be dojo_ramp or direct")
+            interp_count = (
+                int(np.floor(interpolation_nums * 0.8)) if interpolation == "dojo_ramp" else 0
+            )
             for robot in self.robot_manager.robot_list:
                 if robot.type != "target":
                     if hasattr(self, "support_arm_action") and len(self.support_arm_action[env_idx]) > 0:
@@ -516,8 +527,6 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
                     position = control_info[key_name]["position"]
                     current_position = self.robot_manager.get_joint(robot, env_idx_list=[env_idx])[env_idx]
                     if current_position is not None:
-                        interp_count = int(np.floor(interpolation_nums * 0.8))
-
                         current_arr = np.array(current_position)
                         target_arr = np.array(position)
 
@@ -536,8 +545,6 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
                         env_idx
                     ][0]
                     if current_position is not None:
-                        interp_count = int(np.floor(interpolation_nums * 0.8))
-
                         scale = robot.gripper_scale
                         for i in range(interp_count):
                             alpha = (i + 1) / (interp_count + 1)
